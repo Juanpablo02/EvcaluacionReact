@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Text, View,TextInput,Alert } from 'react-native';
 import { TouchableOpacity } from 'react-native-web';
 import { view,viewChilds } from './assets/styles/styles';
@@ -15,7 +15,7 @@ export default function App() {
   const [observacion, setObservacion] = useState('');
   const [datosUsuario, setDatosUsuario] = useState([]);
 
-  const guardarYcalcular = () => {
+  const guardarcalcular = () => {
     parseInt(identificacion);
     parseInt(definitiva);
     let resultadoDefinitiva = 0;
@@ -25,51 +25,61 @@ export default function App() {
           if(nota1.trim() && nota1 <= 5){
             if(nota2.trim() && nota2 <= 5){
               if(nota3.trim() && nota3 <= 5){
-                guardar();
                 resultadoDefinitiva = (parseFloat(nota1) + parseFloat(nota2) + parseFloat(nota3))/3
                 if(resultadoDefinitiva >= 3){
                   setObservacion('Aprueba');
+                  let observacionFinal = 'Aprueba';
                   setDefinitiva(resultadoDefinitiva);
+                  guardar(resultadoDefinitiva,observacionFinal);
                 } else if(resultadoDefinitiva >= 2 && resultadoDefinitiva <= 2.94){
                   setObservacion('Habilita');
+                  let observacionFinal = 'Habilita';
                   setDefinitiva(resultadoDefinitiva);
+                  guardar(resultadoDefinitiva,observacionFinal);
                 } else if(resultadoDefinitiva < 2){
                   setObservacion('Reprueba');
+                  let observacionFinal = 'Reprueba';
                   setDefinitiva(resultadoDefinitiva);
+                  guardar(resultadoDefinitiva,observacionFinal);
                 }
               } else {
-                Alert.alert('Porfavor digite la nota del momento 3');
+                alert('Porfavor digite la nota del momento 3');
               }
             } else {  
-              Alert.alert('Porfavor digite la nota del momento 2');
+            alert('Porfavor digite la nota del momento 2');
             }
           } else {
-            Alert.alert('Porfavor digite la nota del momento 1');
+            alert('Porfavor digite la nota del momento 1');
           }
         } else {
-          Alert.alert('Porfavor digite una asignatura');
+          alert('Porfavor digite una asignatura');
         }
       } else {
-        Alert.alert('Porfavor digite un nombre');
+        alert('Porfavor digite un nombre');
       }
     } else {
-      Alert.alert('Porfavor digita la identificacion');
+      alert('Porfavor digita la identificacion');
     }
 
     
   }
 
-  const guardar = () => {
+  const guardar = (resultadoDefinitiva,observacionFinal) => {
     setDatosUsuario(datos => [...datos,{
-      identificación:identificacion,nombres:nombres,asignatura:asignatura,nota1:nota1,nota2:nota2,nota3:nota3
-    }]);
-    console.log(datosUsuario)
+      identificacion:identificacion,nombres:nombres,asignatura:asignatura,nota1:nota1,nota2:nota2,nota3:nota3,definitiva:resultadoDefinitiva,observacion:observacionFinal
+    }]);    
   }
 
-  let buscar = (idenBuscar) => {
-    let identBuscar = datosUsuario.find(ident => ident.nombres == nombres);
+  let buscar = () => {
+    let identBuscar = datosUsuario.find(ident => ident.identificacion == identificacion);
     if(identBuscar != undefined){
       setNombres(identBuscar.nombres);
+      setAsignatura(identBuscar.asignatura);
+      setNota1(identBuscar.nota1);
+      setNota2(identBuscar.nota2);
+      setNota3(identBuscar.nota3);
+      setDefinitiva(identBuscar.definitiva);
+      setObservacion(identBuscar.observacion);
     } else {
       alert('nombre no hallado');
     }
@@ -163,7 +173,7 @@ export default function App() {
             </View>
         </View>
         <View style={[viewChilds.containerDirection,viewChilds.containerButton,view.alignViews]}>
-          <TouchableOpacity onPress={guardarYcalcular} style={[viewChilds.button]}>
+          <TouchableOpacity onPress={guardarcalcular} style={[viewChilds.button]}>
             <Text style={[viewChilds.textButton]}>Calcular/Guardar</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={buscar} style={[viewChilds.button]}>
